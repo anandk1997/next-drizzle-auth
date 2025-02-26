@@ -1,10 +1,11 @@
 import { roles, users } from "@/drizzle/schema";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { encrypt } from "@/lib/auth";
 import { cookies } from "next/headers";
+import { env } from "@/lib/env/server";
+import { db } from "@/drizzle";
 
 export async function POST(req: Request) {
   try {
@@ -44,7 +45,7 @@ export async function POST(req: Request) {
 
     cookieStore.set("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 60 * 60 * 24, // 1 day
     });

@@ -1,10 +1,11 @@
 import { users, roles, rolePermissions, permissions } from "@/drizzle/schema";
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
-import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
+import { env } from "./env/server";
+import { db } from "@/drizzle";
 
-const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
+const secretKey = new TextEncoder().encode(env.JWT_SECRET_KEY);
 
 export async function encrypt(payload: any) {
   return await new SignJWT(payload)
@@ -35,10 +36,16 @@ export async function getCurrentUser() {
   const session = await getSession();
   if (!session?.id) return null;
 
-  // Updated query using the new Drizzle style:
   const [user] = await db
-    .select()
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      picture: users.picture,
+      role: roles.role,
+    })
     .from(users)
+    .leftJoin(roles, eq(users.roleId, roles.id))
     .where(eq(users.id, session.id))
     .limit(1);
 

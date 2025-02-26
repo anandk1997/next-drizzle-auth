@@ -1,14 +1,22 @@
 "use client";
 
-import { User } from "@/lib/db/schema";
+import { users } from "@/drizzle/schema";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Home, Settings, Users } from "lucide-react";
 
+type AuthUser = {
+  id: string;
+  name: string;
+  email: string;
+  picture: string | null;
+  role: "user" | "admin" | "guest" | null;
+};
+
 interface DashboardNavProps {
-  user: User;
+  user: AuthUser;
 }
 
 export function DashboardNav({ user }: DashboardNavProps) {
